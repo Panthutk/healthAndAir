@@ -1,5 +1,0 @@
-OPENAPI_STUB_DIR = "swagger_server"
-DB_HOST = "iot.cpe.ku.ac.th"
-DB_USER = "b6610545421"
-DB_PASSWD = "panthut.k@ku.th"
-DB_NAME = "rain"
