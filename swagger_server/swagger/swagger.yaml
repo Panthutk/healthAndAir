@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  title: Chaopraya Rainfalls API
+  description: This API provides historical rainfall data over upper Chaopraya river
+    basin between 1987 and 2022.  Raw data provided by Thai Meteorological Department
+    (TMD).
+  version: 2.0.0
+servers:
+- url: http://127.0.0.1:8080/rain-api/v2
+paths:
+  /basins:
+    get:
+      summary: Returns a list of basins.
+      operationId: controller_get_basins
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Basin"
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /basins/{basinId}:
+    get:
+      summary: Returns complete details of the specified basin
+      operationId: controller_get_basin_details
+      parameters:
+      - name: basinId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Basin"
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /stationsInBasin/{basinId}:
+    get:
+      summary: Returns a list of stations located within the specified basin.
+      operationId: controller_get_stations_in_basin
+      parameters:
+      - name: basinId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Station"
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /stations/{stationId}:
+    get:
+      summary: Returns complete details of the specified station
+      operationId: controller_get_station_details
+      parameters:
+      - name: stationId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Station"
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /basins/{basinId}/annualRainfalls/{year}:
+    get:
+      summary: Returns total annual rainfall for the specified basin in the specified
+        year
+      operationId: controller_get_basin_annual_rainfall
+      parameters:
+      - name: basinId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      - name: year
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: number
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+  /basins/{basinId}/monthlyAverage:
+    get:
+      summary: Returns monthly average rainfall for the specified basin across all
+        available years
+      operationId: controller_get_basin_monthly_average
+      parameters:
+      - name: basinId
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: integer
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MonthlyAverage"
+                x-content-type: application/json
+      x-openapi-router-controller: swagger_server.controllers.default_controller
+components:
+  schemas:
+    Basin:
+      type: object
+      properties:
+        basinId:
+          type: integer
+        name:
+          type: string
+        area:
+          type: number
+          description: Total basin area in sq.km
+      example:
+        area: 6.02745618307040320615897144307382404804229736328125
+        name: name
+        basinId: 0
+    Station:
+      type: object
+      properties:
+        stationId:
+          type: integer
+        basinId:
+          type: integer
+        name:
+          type: string
+        lat:
+          type: number
+          description: Latitude
+        lon:
+          type: number
+          description: Longitude
+      example:
+        name: name
+        basinId: 6
+        lon: 5.962133916683182377482808078639209270477294921875
+        lat: 1.46581298050294517310021547018550336360931396484375
+        stationId: 0
+    AnnualRainfall:
+      type: object
+      properties:
+        year:
+          type: integer
+        amount:
+          type: number
+          description: Rainfall amount in mm
+    MonthlyAverage:
+      type: object
+      properties:
+        month:
+          type: string
+          description: Shortened month name
+        monthNo:
+          type: integer
+          description: Month number (1-12)
+        amount:
+          type: number
+          description: Rainfall amount in mm
+      example:
+        amount: 6.02745618307040320615897144307382404804229736328125
+        month: month
+        monthNo: 0
+

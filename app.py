@@ -1,6 +1,5 @@
 import sys
 import os
-
 if not os.path.exists("config.py"):
     print("Configuration 'config.py' not found.  "
           "You may create one from 'config.py.example'.")
@@ -18,6 +17,7 @@ sys.path.append(OPENAPI_STUB_DIR)
 
 try:
     import connexion
+    
 except ModuleNotFoundError:
     print("Please install all required packages by running:"
           " pip install -r requirements.txt")
@@ -36,3 +36,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
