@@ -1,15 +1,14 @@
 openapi: 3.0.0
 info:
-  title: Health Data API
+  title: Environmental Data API
   version: 1.0.2
 servers:
   - url: http://127.0.0.1:8080/rain-api/v2
-
 paths:
-  /secondaryData/OneHour:
+  /secondaryData/AqiOneDay:
     get:
-      summary: Get all entries from the past hour
-      operationId: controller.get_one_hour_data
+      summary: Get AQI data for the current day
+      operationId: controller.get_one_day_data_aqi
       responses:
         200:
           description: Success
@@ -18,12 +17,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Measurement'
-
-  /secondaryData/OneDay:
+                  $ref: '#/components/schemas/AqiMeasurement'
+  /secondaryData/AqiOneWeek:
     get:
-      summary: Get all entries from today
-      operationId: controller.get_one_day_data
+      summary: Get AQI data for the past week
+      operationId: controller.get_one_week_data_aqi
       responses:
         200:
           description: Success
@@ -32,31 +30,166 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Measurement'
-
+                  $ref: '#/components/schemas/AqiMeasurement'
+  /secondaryData/KidbrightOneDay:
+    get:
+      summary: Get Kidbright data for the current day
+      operationId: controller.get_one_day_data_kidbright
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KidbrightMeasurement'
+  /secondaryData/KidbrightOneWeek:
+    get:
+      summary: Get Kidbright data for the past week
+      operationId: controller.get_one_week_data_kidbright
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KidbrightMeasurement'
+  /secondaryData/TmdOneDay:
+    get:
+      summary: Get TMD data for the current day
+      operationId: controller.get_one_day_data_tmd
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TmdMeasurement'
+  /secondaryData/TmdOneWeek:
+    get:
+      summary: Get TMD data for the past week
+      operationId: controller.get_one_week_data_tmd
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TmdMeasurement'
 components:
   schemas:
-    Measurement:
+    AqiMeasurement:
       type: object
       properties:
-        id: { type: integer }
-        temperature: { type: number }
-        heartbeat_bpm: { type: string, nullable: true }
-        humidity: { type: number }
-        aqi: { type: number, nullable: true }
-        pm25: { type: number, nullable: true }
-        pm10: { type: number, nullable: true }
-        o3: { type: number, nullable: true }
-        no2: { type: number, nullable: true }
-        co: { type: number, nullable: true }
-        so2: { type: number, nullable: true }
-        dew: { type: number, nullable: true }
-        pressure: { type: number, nullable: true }
-        wind: { type: number, nullable: true }
-        wind_gust: { type: number, nullable: true }
-        dominentpol: { type: string, nullable: true }
-        light: { type: number }
-        latitude: { type: number }
-        longitude: { type: number }
-        timestamp: { type: string, format: date-time }
-        source: { type: string }
+        id:
+          type: integer
+        temperature:
+          type: number
+          nullable: true
+        humidity:
+          type: number
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+        source:
+          type: string
+      required:
+        - id
+        - timestamp
+        - source
+    KidbrightMeasurement:
+      type: object
+      properties:
+        id:
+          type: integer
+        temperature:
+          type: number
+          nullable: true
+        heartbeat_bpm:
+          type: number
+          nullable: true
+        humidity:
+          type: number
+          nullable: true
+        dew:
+          type: number
+          nullable: true
+        pressure:
+          type: number
+          nullable: true
+        wind:
+          type: number
+          nullable: true
+        wind_gust:
+          type: number
+          nullable: true
+        light:
+          type: number
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+        source:
+          type: string
+      required:
+        - id
+        - timestamp
+        - source
+    TmdMeasurement:
+      type: object
+      properties:
+        id:
+          type: integer
+        temperature:
+          type: number
+          nullable: true
+        humidity:
+          type: number
+          nullable: true
+        dew:
+          type: number
+          nullable: true
+        pressure:
+          type: number
+          nullable: true
+        wind:
+          type: number
+          nullable: true
+        wind_gust:
+          type: number
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+        source:
+          type: string
+      required:
+        - id
+        - timestamp
+        - source
