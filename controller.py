@@ -21,10 +21,11 @@ pool = PooledDB(
 
 
 def get_one_day_data_aqi():
-    """Fetch AQI data for the current day, excluding NULL columns."""
+    """Fetch AQI data for the current day with all valid columns."""
     with pool.connection() as conn, conn.cursor() as cs:
         cs.execute("""
-            SELECT id, temperature, humidity, latitude, longitude, timestamp, source
+            SELECT id, temperature, humidity, aqi, pm25, pm10, o3, no2, co, so2,
+                   dew, pressure, wind, dominentpol, light, latitude, longitude, timestamp, source
             FROM secondaryData
             WHERE source = 'aqi' AND timestamp >= CURDATE()
         """)
@@ -36,33 +37,34 @@ def get_one_day_data_aqi():
                 temperature=row[1],
                 heartbeat_bpm=None,
                 humidity=row[2],
-                aqi=None,
-                pm25=None,
-                pm10=None,
-                o3=None,
-                no2=None,
-                co=None,
-                so2=None,
-                dew=None,
-                pressure=None,
-                wind=None,
+                aqi=row[3],
+                pm25=row[4],
+                pm10=row[5],
+                o3=row[6],
+                no2=row[7],
+                co=row[8],
+                so2=row[9],
+                dew=row[10],
+                pressure=row[11],
+                wind=row[12],
                 wind_gust=None,
-                dominentpol=None,
-                light=None,
-                latitude=row[3],
-                longitude=row[4],
-                timestamp=row[5],
-                source=row[6]
+                dominentpol=row[13],
+                light=row[14],
+                latitude=row[15],
+                longitude=row[16],
+                timestamp=row[17],
+                source=row[18]
             )
             measurements.append(measurement.to_dict())
         return measurements
 
 
 def get_one_week_data_aqi():
-    """Fetch AQI data for the past week, excluding NULL columns."""
+    """Fetch AQI data for the past week with all valid columns."""
     with pool.connection() as conn, conn.cursor() as cs:
         cs.execute("""
-            SELECT id, temperature, humidity, latitude, longitude, timestamp, source
+            SELECT id, temperature, humidity, aqi, pm25, pm10, o3, no2, co, so2,
+                   dew, pressure, wind, dominentpol, light, latitude, longitude, timestamp, source
             FROM secondaryData
             WHERE source = 'aqi' AND timestamp >= CURDATE() - INTERVAL 7 DAY
         """)
@@ -74,33 +76,33 @@ def get_one_week_data_aqi():
                 temperature=row[1],
                 heartbeat_bpm=None,
                 humidity=row[2],
-                aqi=None,
-                pm25=None,
-                pm10=None,
-                o3=None,
-                no2=None,
-                co=None,
-                so2=None,
-                dew=None,
-                pressure=None,
-                wind=None,
+                aqi=row[3],
+                pm25=row[4],
+                pm10=row[5],
+                o3=row[6],
+                no2=row[7],
+                co=row[8],
+                so2=row[9],
+                dew=row[10],
+                pressure=row[11],
+                wind=row[12],
                 wind_gust=None,
-                dominentpol=None,
-                light=None,
-                latitude=row[3],
-                longitude=row[4],
-                timestamp=row[5],
-                source=row[6]
+                dominentpol=row[13],
+                light=row[14],
+                latitude=row[15],
+                longitude=row[16],
+                timestamp=row[17],
+                source=row[18]
             )
             measurements.append(measurement.to_dict())
         return measurements
 
 
 def get_one_day_data_kidbright():
-    """Fetch Kidbright data for the current day, excluding NULL columns."""
+    """Fetch Kidbright data for the current day, including aqi column (NULL)."""
     with pool.connection() as conn, conn.cursor() as cs:
         cs.execute("""
-            SELECT id, temperature, heartbeat_bpm, humidity, dew, pressure, wind, wind_gust, light, latitude, longitude, timestamp, source
+            SELECT id, temperature, heartbeat_bpm, humidity, aqi, dew, pressure, wind, wind_gust, light, latitude, longitude, timestamp, source
             FROM secondaryData
             WHERE source = 'kidbright' AND timestamp >= CURDATE()
         """)
@@ -112,33 +114,33 @@ def get_one_day_data_kidbright():
                 temperature=row[1],
                 heartbeat_bpm=row[2],
                 humidity=row[3],
-                aqi=None,
+                aqi=row[4],
                 pm25=None,
                 pm10=None,
                 o3=None,
                 no2=None,
                 co=None,
                 so2=None,
-                dew=row[4],
-                pressure=row[5],
-                wind=row[6],
-                wind_gust=row[7],
+                dew=row[5],
+                pressure=row[6],
+                wind=row[7],
+                wind_gust=row[8],
                 dominentpol=None,
-                light=row[8],
-                latitude=row[9],
-                longitude=row[10],
-                timestamp=row[11],
-                source=row[12]
+                light=row[9],
+                latitude=row[10],
+                longitude=row[11],
+                timestamp=row[12],
+                source=row[13]
             )
             measurements.append(measurement.to_dict())
         return measurements
 
 
 def get_one_week_data_kidbright():
-    """Fetch Kidbright data for the past week, excluding NULL columns."""
+    """Fetch Kidbright data for the past week, including aqi column (NULL)."""
     with pool.connection() as conn, conn.cursor() as cs:
         cs.execute("""
-            SELECT id, temperature, heartbeat_bpm, humidity, dew, pressure, wind, wind_gust, light, latitude, longitude, timestamp, source
+            SELECT id, temperature, heartbeat_bpm, humidity, aqi, dew, pressure, wind, wind_gust, light, latitude, longitude, timestamp, source
             FROM secondaryData
             WHERE source = 'kidbright' AND timestamp >= CURDATE() - INTERVAL 7 DAY
         """)
@@ -150,23 +152,23 @@ def get_one_week_data_kidbright():
                 temperature=row[1],
                 heartbeat_bpm=row[2],
                 humidity=row[3],
-                aqi=None,
+                aqi=row[4],
                 pm25=None,
                 pm10=None,
                 o3=None,
                 no2=None,
                 co=None,
                 so2=None,
-                dew=row[4],
-                pressure=row[5],
-                wind=row[6],
-                wind_gust=row[7],
+                dew=row[5],
+                pressure=row[6],
+                wind=row[7],
+                wind_gust=row[8],
                 dominentpol=None,
-                light=row[8],
-                latitude=row[9],
-                longitude=row[10],
-                timestamp=row[11],
-                source=row[12]
+                light=row[9],
+                latitude=row[10],
+                longitude=row[11],
+                timestamp=row[12],
+                source=row[13]
             )
             measurements.append(measurement.to_dict())
         return measurements
