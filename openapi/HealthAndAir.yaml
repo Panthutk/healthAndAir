@@ -3,7 +3,7 @@ info:
   title: Environmental Data API
   version: 1.0.2
 servers:
-  - url: http://127.0.0.1:8080/rain-api/v2
+  - url: http://127.0.0.1:8080/HealthAndAir/v2
 paths:
   /secondaryData/AqiOneDay:
     get:
