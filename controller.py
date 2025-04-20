@@ -1,11 +1,10 @@
+from swagger_server import models
 import sys
-from flask import abort
 import pymysql
 from dbutils.pooled_db import PooledDB
 from config import OPENAPI_STUB_DIR, DB_HOST, DB_USER, DB_PASSWD, DB_NAME
 
 sys.path.append(OPENAPI_STUB_DIR)
-from swagger_server import models
 
 pool = PooledDB(creator=pymysql,
                 host=DB_HOST,
@@ -15,114 +14,26 @@ pool = PooledDB(creator=pymysql,
                 maxconnections=1,
                 blocking=True)
 
-def get_basins():
+
+def get_one_hour_data():
     with pool.connection() as conn, conn.cursor() as cs:
         cs.execute("""
-            SELECT basin_id, ename, area
-            FROM basin
+            SELECT id, temperature, heartbeat_bpm, humidity, aqi, pm25, pm10,
+                   o3, no2, co, so2, dew, pressure, wind, wind_gust,
+                   dominentpol, light, latitude, longitude, timestamp, source
+            FROM secondaryData
+            WHERE timestamp >= NOW() - INTERVAL 1 HOUR
         """)
-        result = [models.Basin(*row) for row in cs.fetchall()]
-        return result
+        return [models.Measurement(*row).to_dict() for row in cs.fetchall()]
 
-def get_basin_details(basin_id):
+
+def get_one_day_data():
     with pool.connection() as conn, conn.cursor() as cs:
         cs.execute("""
-            SELECT basin_id, ename, area
-            FROM basin
-            WHERE basin_id=%s
-        """, [basin_id])
-        result = cs.fetchone()
-    if result:
-        basin_id, name, area = result
-        return models.Basin(*result)
-    else:
-        abort(404)
-
-def get_stations_in_basin(basin_id):
-    with pool.connection() as conn, conn.cursor() as cs:
-        cs.execute("""
-            SELECT station_id, basin_id, ename, lat, lon
-            FROM station WHERE basin_id=%s
-            """, [basin_id])
-        result = [models.Station(*row) for row in cs.fetchall()]
-        return result
-
-def get_station_details(station_id):
-    with pool.connection() as conn, conn.cursor() as cs:
-        cs.execute("""
-            SELECT station_id, basin_id, ename, lat, lon
-            FROM station
-            WHERE station_id=%s
-            """, [station_id])
-        result = cs.fetchone()
-    if result:
-        return models.Station(*result)
-    else:
-        abort(404)
-
-def get_basin_annual_rainfall(basin_id, year):
-    with pool.connection() as conn, conn.cursor() as cs:
-        cs.execute("""
-            SELECT SUM(daily_avg)
-            FROM (
-                SELECT r.year, r.month, r.day, AVG(r.amount) as daily_avg
-                FROM rainfall r
-                INNER JOIN station s ON r.station_id=s.station_id
-                INNER JOIN basin b ON b.basin_id=s.basin_id
-                WHERE b.basin_id=%s AND r.year=%s
-                GROUP BY r.year, r.month, r.day
-            ) daily_avg
-        """, [basin_id, year])
-        result = cs.fetchone()
-    if result and result[0]:
-        amount = round(result[0], 2)
-        return amount
-    else:
-        abort(404)
-
-def get_basin_monthly_average(basin_id):
-    with pool.connection() as conn, conn.cursor() as cs:
-        cs.execute("""
-            SELECT month, AVG(monthly_amount)
-            FROM (
-                SELECT SUM(r.amount) as monthly_amount, month
-                FROM rainfall r
-                INNER JOIN station s ON r.station_id=s.station_id
-                INNER JOIN basin b ON s.basin_id=b.basin_id
-                WHERE b.basin_id=%s
-                GROUP BY r.station_id, month, year
-            ) monthly
-            GROUP BY month
-            """, [basin_id])
-        months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                  'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-        result = [
-            models.MonthlyAverage(months[month-1], month, round(amount, 2))
-            for month, amount in cs.fetchall()
-        ]
-        return result
-
-def get_all_annual_rainfalls(basin_id):
-    with pool.connection() as conn, conn.cursor() as cs:
-        cs.execute("""
-            SELECT year, SUM(daily_avg) AS total
-            FROM (
-                SELECT r.year AS year, r.month, r.day, AVG(r.amount) AS daily_avg
-                FROM rainfall r
-                INNER JOIN station s ON r.station_id = s.station_id
-                INNER JOIN basin b ON b.basin_id = s.basin_id
-                WHERE b.basin_id = %s
-                GROUP BY r.year, r.month, r.day
-            ) AS daily_data
-            GROUP BY year
-            ORDER BY year
-        """, [basin_id])
-        rows = cs.fetchall()
-
-    # Check if any results are returned
-    if rows:
-        # Return the annual rainfall data in the expected format
-        return [models.AnnualRainfall(year=row[0], amount=round(row[1], 2)) for row in rows]
-    else:
-        # If no data is found, abort with 404
-        abort(404)
+            SELECT id, temperature, heartbeat_bpm, humidity, aqi, pm25, pm10,
+                   o3, no2, co, so2, dew, pressure, wind, wind_gust,
+                   dominentpol, light, latitude, longitude, timestamp, source
+            FROM secondaryData
+            WHERE timestamp >= CURDATE()
+        """)
+        return [models.Measurement(*row).to_dict() for row in cs.fetchall()]

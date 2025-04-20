@@ -7,3 +7,4 @@ from swagger_server.models.annual_rainfall import AnnualRainfall
 from swagger_server.models.basin import Basin
 from swagger_server.models.monthly_average import MonthlyAverage
 from swagger_server.models.station import Station
+from .measurement import Measurement
