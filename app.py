@@ -1,6 +1,7 @@
 from swagger_server import encoder
 import sys
 import os
+from flask_cors import CORS  # Add this
 if not os.path.exists("config.py"):
     print("Configuration 'config.py' not found.  "
           "You may create one from 'config.py.example'.")
@@ -18,23 +19,19 @@ sys.path.append(OPENAPI_STUB_DIR)
 
 try:
     import connexion
-
 except ModuleNotFoundError:
     print("Please install all required packages by running:"
           " pip install -r requirements.txt")
     sys.exit(1)
 
-
 def main():
     app = connexion.App(__name__, specification_dir='./openapi/')
     app.app.json_encoder = encoder.JSONEncoder
+    CORS(app.app, resources={r"/HealthAndAir/v2/*": {"origins": "http://localhost:8000"}})  # Add this
     app.add_api('HealthAndAir.yaml',
-                arguments={
-                    'title': 'Health And Air Quality Monitoring System'},
+                arguments={'title': 'Health And Air Quality Monitoring System'},
                 pythonic_params=True)
-
     app.run(port=8080, debug=True)
-
 
 if __name__ == '__main__':
     main()

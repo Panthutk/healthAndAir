@@ -1,0 +1,4 @@
+site:
+  title: Health & Air Quality Dashboard
+api:
+  base_url: http://localhost:8080/HealthAndAir/v2
