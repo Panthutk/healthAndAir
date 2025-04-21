@@ -19,16 +19,21 @@ To run the server, please execute the following from the root directory:
 ```
 pip install -r requirements.txt
 ```
-run this command in repository terminal: 
+
+run this command in repository terminal:
+
 ```
 python app.py
 ```
+
 in a seperate repository terminal run:
+
 ```
 python -m http.server 8000
 ```
+
 and open your browser to here:
 
 ```
-http://localhost:8080
+http://localhost:8000
 ```

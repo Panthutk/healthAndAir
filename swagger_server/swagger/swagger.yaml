@@ -1,203 +1,195 @@
 openapi: 3.0.0
 info:
-  title: Chaopraya Rainfalls API
-  description: This API provides historical rainfall data over upper Chaopraya river
-    basin between 1987 and 2022.  Raw data provided by Thai Meteorological Department
-    (TMD).
-  version: 2.0.0
+  title: Environmental Data API
+  version: 1.0.2
 servers:
-- url: http://127.0.0.1:8080/rain-api/v2
+  - url: http://127.0.0.1:8080/HealthAndAir/v2
 paths:
-  /basins:
+  /secondaryData/AqiOneDay:
     get:
-      summary: Returns a list of basins.
-      operationId: controller_get_basins
+      summary: Get AQI data for the current day
+      operationId: controller.get_one_day_data_aqi
       responses:
-        "200":
+        200:
           description: Success
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Basin"
-                x-content-type: application/json
-      x-openapi-router-controller: swagger_server.controllers.default_controller
-  /basins/{basinId}:
+                  $ref: '#/components/schemas/AqiMeasurement'
+  /secondaryData/AqiOneWeek:
     get:
-      summary: Returns complete details of the specified basin
-      operationId: controller_get_basin_details
-      parameters:
-      - name: basinId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+      summary: Get AQI data for the past week
+      operationId: controller.get_one_week_data_aqi
       responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Basin"
-      x-openapi-router-controller: swagger_server.controllers.default_controller
-  /stationsInBasin/{basinId}:
-    get:
-      summary: Returns a list of stations located within the specified basin.
-      operationId: controller_get_stations_in_basin
-      parameters:
-      - name: basinId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      responses:
-        "200":
+        200:
           description: Success
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Station"
-                x-content-type: application/json
-      x-openapi-router-controller: swagger_server.controllers.default_controller
-  /stations/{stationId}:
+                  $ref: '#/components/schemas/AqiMeasurement'
+  /secondaryData/KidbrightOneDay:
     get:
-      summary: Returns complete details of the specified station
-      operationId: controller_get_station_details
-      parameters:
-      - name: stationId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
+      summary: Get Kidbright data for the current day
+      operationId: controller.get_one_day_data_kidbright
       responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Station"
-      x-openapi-router-controller: swagger_server.controllers.default_controller
-  /basins/{basinId}/annualRainfalls/{year}:
-    get:
-      summary: Returns total annual rainfall for the specified basin in the specified
-        year
-      operationId: controller_get_basin_annual_rainfall
-      parameters:
-      - name: basinId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      - name: year
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: number
-                x-content-type: application/json
-      x-openapi-router-controller: swagger_server.controllers.default_controller
-  /basins/{basinId}/monthlyAverage:
-    get:
-      summary: Returns monthly average rainfall for the specified basin across all
-        available years
-      operationId: controller_get_basin_monthly_average
-      parameters:
-      - name: basinId
-        in: path
-        required: true
-        style: simple
-        explode: false
-        schema:
-          type: integer
-      responses:
-        "200":
+        200:
           description: Success
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/MonthlyAverage"
-                x-content-type: application/json
-      x-openapi-router-controller: swagger_server.controllers.default_controller
+                  $ref: '#/components/schemas/KidbrightMeasurement'
+  /secondaryData/KidbrightOneWeek:
+    get:
+      summary: Get Kidbright data for the past week
+      operationId: controller.get_one_week_data_kidbright
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/KidbrightMeasurement'
+  /secondaryData/TmdOneDay:
+    get:
+      summary: Get TMD data for the current day
+      operationId: controller.get_one_day_data_tmd
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TmdMeasurement'
+  /secondaryData/TmdOneWeek:
+    get:
+      summary: Get TMD data for the past week
+      operationId: controller.get_one_week_data_tmd
+      responses:
+        200:
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TmdMeasurement'
 components:
   schemas:
-    Basin:
+    AqiMeasurement:
       type: object
       properties:
-        basinId:
+        id:
           type: integer
-        name:
+        temperature:
+          type: number
+          nullable: true
+        humidity:
+          type: number
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        timestamp:
           type: string
-        area:
-          type: number
-          description: Total basin area in sq.km
-      example:
-        area: 6.02745618307040320615897144307382404804229736328125
-        name: name
-        basinId: 0
-    Station:
-      type: object
-      properties:
-        stationId:
-          type: integer
-        basinId:
-          type: integer
-        name:
+          format: date-time
+        source:
           type: string
-        lat:
-          type: number
-          description: Latitude
-        lon:
-          type: number
-          description: Longitude
-      example:
-        name: name
-        basinId: 6
-        lon: 5.962133916683182377482808078639209270477294921875
-        lat: 1.46581298050294517310021547018550336360931396484375
-        stationId: 0
-    AnnualRainfall:
+      required:
+        - id
+        - timestamp
+        - source
+    KidbrightMeasurement:
       type: object
       properties:
-        year:
+        id:
           type: integer
-        amount:
+        temperature:
           type: number
-          description: Rainfall amount in mm
-    MonthlyAverage:
-      type: object
-      properties:
-        month:
+          nullable: true
+        heartbeat_bpm:
+          type: number
+          nullable: true
+        humidity:
+          type: number
+          nullable: true
+        dew:
+          type: number
+          nullable: true
+        pressure:
+          type: number
+          nullable: true
+        wind:
+          type: number
+          nullable: true
+        wind_gust:
+          type: number
+          nullable: true
+        light:
+          type: number
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        timestamp:
           type: string
-          description: Shortened month name
-        monthNo:
+          format: date-time
+        source:
+          type: string
+      required:
+        - id
+        - timestamp
+        - source
+    TmdMeasurement:
+      type: object
+      properties:
+        id:
           type: integer
-          description: Month number (1-12)
-        amount:
+        temperature:
           type: number
-          description: Rainfall amount in mm
-      example:
-        amount: 6.02745618307040320615897144307382404804229736328125
-        month: month
-        monthNo: 0
-
+          nullable: true
+        humidity:
+          type: number
+          nullable: true
+        dew:
+          type: number
+          nullable: true
+        pressure:
+          type: number
+          nullable: true
+        wind:
+          type: number
+          nullable: true
+        wind_gust:
+          type: number
+          nullable: true
+        latitude:
+          type: number
+          nullable: true
+        longitude:
+          type: number
+          nullable: true
+        timestamp:
+          type: string
+          format: date-time
+        source:
+          type: string
+      required:
+        - id
+        - timestamp
+        - source
