@@ -69,7 +69,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-in a seperate repository terminal run:
+in a seperate repository terminal run (Activate Environment):
 
 ```powershell
 python -m http.server 8000
