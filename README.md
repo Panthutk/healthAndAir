@@ -1,4 +1,4 @@
-# Swagger generated server
+# Health And Air Quality
 
 ## Overview
 
@@ -37,3 +37,8 @@ and open your browser to here:
 ```
 http://localhost:8000
 ```
+
+| Team Members                                                   | Photo                                                |
+|---------------------------------------------------------------|--------------------------------------------------------|
+| 66105455421 Panthut Ketphan            | <img src="Enemy/_Previews/Fighter.gif" width="200">   |
+| 6610545332 Prima Xivivadh      | <img src="Enemy/_Previews/Battlecruiser.gif" width="200"> |
