@@ -17,7 +17,6 @@ This project integrates **Primary** and **Secondary** environmental data using N
   - Light
   - AQI
   - Latitude / Longitude
-  - Heartbeat BPM
 
 ### 🔹 Secondary Data (External APIs)
 
@@ -63,19 +62,19 @@ python -m venv venv
 pip install -r requirements.txt
 ```
 
-#### run this command in repository terminal
+#### Run this command in repository terminal
 
 ```powershell
 python app.py
 ```
 
-in a seperate repository terminal run (Activate Environment):
+#### In a seperate repository terminal run (Activate Virtual Environment)
 
 ```powershell
 python -m http.server 8000
 ```
 
-and open your browser to here:
+#### And open your browser to here
 
 ```powershell
 http://localhost:8000
