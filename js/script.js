@@ -46,7 +46,7 @@ function loadData(source, period) {
                   <p class="card-text">Temperature: ${item.temperature ?? 'N/A'} °C</p>
                   <p class="card-text">Humidity: ${item.humidity ?? 'N/A'} %</p>
           `;
-          if (source === 'aqi') {
+          if (source === 'aqi' || source === 'kidbright') {
             cardContent += `
               <p class="card-text">AQI: ${item.aqi ?? 'N/A'}</p>
               <p class="card-text">PM2.5: ${item.pm25 ?? 'N/A'} µg/m³</p>
@@ -59,11 +59,20 @@ function loadData(source, period) {
         container.append('<p>No data available.</p>');
       }
 
-      // Individual source graphs (temperature and humidity)
+      // Individual source graphs (temperature, humidity, and AQI for AQI source)
       const chartData = [
         { x: data.map(item => item.timestamp), y: data.map(item => item.temperature ?? null), type: 'scatter', mode: 'lines+markers', name: 'Temperature (°C)' },
         { x: data.map(item => item.timestamp), y: data.map(item => item.humidity ?? null), type: 'scatter', mode: 'lines+markers', name: 'Humidity (%)' }
       ];
+      if (source === 'aqi' || source === 'kidbright') {
+        chartData.push({
+          x: data.map(item => item.timestamp),
+          y: data.map(item => item.aqi ?? null),
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: 'AQI'
+        });
+      }
       const layout = { title: `${source.toUpperCase()} Trends (${period})`, xaxis: { title: 'Time' }, yaxis: { title: 'Value' } };
       Plotly.newPlot(`${source}-chart`, chartData, layout);
 
@@ -82,6 +91,7 @@ function loadData(source, period) {
 
 function loadComparisonData(period) {
   const sources = ['aqi', 'kidbright', 'tmd'];
+  const aqiSources = ['aqi', 'kidbright']; // Only AQI and Kidbright for AQI comparison
   const endpointMap = {
     'aqi': { 'day': 'AqiOneDay', 'week': 'AqiOneWeek' },
     'kidbright': { 'day': 'KidbrightOneDay', 'week': 'KidbrightOneWeek' },
@@ -129,10 +139,28 @@ function loadComparisonData(period) {
         yaxis: { title: 'Humidity (%)' }
       };
       Plotly.newPlot('comparison-humidity-chart', humidityData, humidityLayout);
+
+      // AQI comparison (only AQI and Kidbright)
+      const aqiData = results
+        .filter(result => aqiSources.includes(result.source))
+        .map(result => ({
+          x: result.data.map(item => item.timestamp),
+          y: result.data.map(item => item.aqi ?? null),
+          type: 'scatter',
+          mode: 'lines+markers',
+          name: `${result.source.toUpperCase()} AQI`
+        }));
+      const aqiLayout = {
+        title: `AQI Comparison (${period})`,
+        xaxis: { title: 'Time' },
+        yaxis: { title: 'AQI' }
+      };
+      Plotly.newPlot('comparison-aqi-chart', aqiData, aqiLayout);
     })
     .catch(error => {
       console.error('Error loading comparison data:', error);
       $('#comparison-temp-chart').html('<p>Error loading comparison data.</p>');
       $('#comparison-humidity-chart').html('<p>Error loading comparison data.</p>');
+      $('#comparison-aqi-chart').html('<p>Error loading comparison data.</p>');
     });
 }
