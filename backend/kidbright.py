@@ -151,7 +151,7 @@ while True:
         connect_mqtt()
 
     now = time.ticks_ms()
-    if time.ticks_diff(now, timestamp) >= 600000:  # Every 30 minutes
+    if time.ticks_diff(now, timestamp) >= 600000:  # Every 10 minutes
         timestamp = now  # Reset timestamp
 
         temperature, humidity = read_dht11()
