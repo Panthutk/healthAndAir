@@ -1,0 +1,371 @@
+[
+    {
+        "id": "92470c9605c09265",
+        "type": "tab",
+        "label": "Flow 5",
+        "disabled": true,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "9c3da0629f189324",
+        "type": "inject",
+        "z": "92470c9605c09265",
+        "name": "Inject Every 60 mins",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 180,
+        "y": 220,
+        "wires": [
+            [
+                "029cd66334fc8f00"
+            ]
+        ]
+    },
+    {
+        "id": "029cd66334fc8f00",
+        "type": "http request",
+        "z": "92470c9605c09265",
+        "name": "kasetsart",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://api.waqi.info/feed/geo:13.8460;100.5650/?token=eabb62548997f2feca85e27da1c0bc230a8f6636",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 460,
+        "y": 220,
+        "wires": [
+            [
+                "cd40d56a62528302"
+            ]
+        ]
+    },
+    {
+        "id": "cd40d56a62528302",
+        "type": "json",
+        "z": "92470c9605c09265",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 770,
+        "y": 220,
+        "wires": [
+            [
+                "d3e6a6140588b620"
+            ]
+        ]
+    },
+    {
+        "id": "d3e6a6140588b620",
+        "type": "function",
+        "z": "92470c9605c09265",
+        "name": "insert in to table",
+        "func": "const aqi = msg.payload.data.aqi;\nconst lat = msg.payload.data.city.geo[0];\nconst lon = msg.payload.data.city.geo[1];\n\nconst iaqi = msg.payload.data.iaqi;\n\nconst humidity = iaqi.h ? iaqi.h.v : null;\nconst temperature = iaqi.t ? iaqi.t.v : null;\nconst pm25 = iaqi.pm25 ? iaqi.pm25.v : null;\nconst pm10 = iaqi.pm10 ? iaqi.pm10.v : null;\nconst o3 = iaqi.o3 ? iaqi.o3.v : null;\nconst no2 = iaqi.no2 ? iaqi.no2.v : null;\nconst co = iaqi.co ? iaqi.co.v : null;\nconst so2 = iaqi.so2 ? iaqi.so2.v : null;\nconst dew = iaqi.dew ? iaqi.dew.v : null;\nconst pressure = iaqi.p ? iaqi.p.v : null;\nconst wind = iaqi.w ? iaqi.w.v : null;\nconst wind_gust = iaqi.wg ? iaqi.wg.v : null;\n\nconst dominentpol = msg.payload.data.dominentpol;\nconst source = \"aqi\";\n\nconst currentDate = msg.payload.data.time.s.split(\" \")[0];\nconst uviForecast = msg.payload.data.forecast?.daily?.uvi?.find(item => item.day === currentDate);\nconst light = uviForecast ? uviForecast.avg : null;\n\nmsg.topic = `INSERT INTO secondaryData (aqi, latitude, longitude, humidity, temperature, pm25, pm10, o3, no2, co, so2, dew, pressure, wind, wind_gust, dominentpol, light, source) VALUES (${aqi}, ${lat}, ${lon}, ${humidity}, ${temperature}, ${pm25}, ${pm10}, ${o3}, ${no2}, ${co}, ${so2}, ${dew}, ${pressure}, ${wind}, ${wind_gust}, '${dominentpol}', ${light}, '${source}')`;\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1060,
+        "y": 220,
+        "wires": [
+            [
+                "ad51b8fdcdf4d5e1",
+                "5fe42d3b8a96bf02"
+            ]
+        ]
+    },
+    {
+        "id": "ad51b8fdcdf4d5e1",
+        "type": "mysql",
+        "z": "92470c9605c09265",
+        "mydb": "ed1bf7946e837a93",
+        "name": "",
+        "x": 1440,
+        "y": 220,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "5fe42d3b8a96bf02",
+        "type": "debug",
+        "z": "92470c9605c09265",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1300,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "0ff5ca3fcb62dbd0",
+        "type": "mqtt in",
+        "z": "92470c9605c09265",
+        "name": "",
+        "topic": "b6610545421/sensors",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "f8264d46e499945d",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 360,
+        "y": 480,
+        "wires": [
+            [
+                "89f9cbec7d619822",
+                "63e9e50206d55982"
+            ]
+        ]
+    },
+    {
+        "id": "2365ef88ea76622f",
+        "type": "mysql",
+        "z": "92470c9605c09265",
+        "mydb": "ed1bf7946e837a93",
+        "name": "",
+        "x": 920,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "89f9cbec7d619822",
+        "type": "debug",
+        "z": "92470c9605c09265",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "44d50c7edfdc700f",
+        "type": "debug",
+        "z": "92470c9605c09265",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 880,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "63e9e50206d55982",
+        "type": "function",
+        "z": "92470c9605c09265",
+        "name": "function 1",
+        "func": "function sqlSafe(value) {\n  if (value === undefined || value === null || value === 'undefined') return 'NULL';\n  if (typeof value === 'string') return `'${value}'`;\n  return value;\n}\n\nlet temp = sqlSafe(msg.payload.temperature);\nlet humidity = sqlSafe(msg.payload.humidity);\nlet aqi = sqlSafe(msg.payload.aqi);\nlet light = sqlSafe(msg.payload.light);\nlet lat = sqlSafe(msg.payload.lat);\nlet lon = sqlSafe(msg.payload.lon);\nlet source = sqlSafe('kidbright');  // fixed to pass through sqlSafe\nlet heartbeat_bpm = sqlSafe(msg.payload.heartbeat_bpm);\n\nmsg.topic = `\n  INSERT INTO secondaryData (\n    temperature, humidity, heartbeat_bpm, aqi, light, latitude, longitude, source\n  ) VALUES (\n    ${temp},\n    ${humidity},\n    ${heartbeat_bpm},\n    ${aqi},\n    ${light},\n    ${lat},\n    ${lon},\n    ${source}\n  );\n`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 680,
+        "y": 480,
+        "wires": [
+            [
+                "2365ef88ea76622f",
+                "44d50c7edfdc700f"
+            ]
+        ]
+    },
+    {
+        "id": "18a9b4068e525d74",
+        "type": "inject",
+        "z": "92470c9605c09265",
+        "name": "Every  Hours",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "10800",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "1",
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 280,
+        "y": 780,
+        "wires": [
+            [
+                "28daf4edb4919303"
+            ]
+        ]
+    },
+    {
+        "id": "28daf4edb4919303",
+        "type": "http request",
+        "z": "92470c9605c09265",
+        "name": "Get TMD Weather",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "https://data.tmd.go.th/api/Weather3Hours/V2/?uid=api&ukey=api12345&format=json",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 540,
+        "y": 780,
+        "wires": [
+            [
+                "12538e8bf6f716a3"
+            ]
+        ]
+    },
+    {
+        "id": "12538e8bf6f716a3",
+        "type": "json",
+        "z": "92470c9605c09265",
+        "name": "Parse JSON",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 740,
+        "y": 780,
+        "wires": [
+            [
+                "71287c2777744dc5"
+            ]
+        ]
+    },
+    {
+        "id": "71287c2777744dc5",
+        "type": "function",
+        "z": "92470c9605c09265",
+        "name": "Prepare sql",
+        "func": "// Your fixed latitude & longitude for comparison\nconst myLat = 13.9192;\nconst myLon = 100.605;\n\n// Get the station list\nconst stations = msg.payload.Stations.Station;\nlet closestStation = null;\nlet minDist = Infinity;\n\nfor (let station of stations) {\n    const lat = parseFloat(station.Latitude);\n    const lon = parseFloat(station.Longitude);\n    const distance = Math.sqrt(Math.pow(lat - myLat, 2) + Math.pow(lon - myLon, 2));\n\n    if (distance < minDist) {\n        minDist = distance;\n        closestStation = station;\n    }\n}\n\nif (!closestStation || !closestStation.Observation) {\n    return null;\n}\n\n// Extract weather values\nconst temperature = parseFloat(closestStation.Observation.AirTemperature || 0);\nconst humidity = parseFloat(closestStation.Observation.RelativeHumidity || 0);\nconst windSpeed = parseFloat(closestStation.Observation.WindSpeed || 0);\nconst latitude = parseFloat(closestStation.Latitude || 0);\nconst longitude = parseFloat(closestStation.Longitude || 0);\nconst source = \"TMD\";\n\n// Construct SQL query with windSpeed\nmsg.topic = `INSERT INTO secondaryData \n(temperature, humidity, wind, latitude, longitude, source)\nVALUES (${temperature}, ${humidity}, ${windSpeed}, ${latitude}, ${longitude}, '${source}')`;\n\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 930,
+        "y": 780,
+        "wires": [
+            [
+                "5d428643018d0943",
+                "8fd8af43eb6a854f"
+            ]
+        ]
+    },
+    {
+        "id": "5d428643018d0943",
+        "type": "mysql",
+        "z": "92470c9605c09265",
+        "mydb": "ed1bf7946e837a93",
+        "name": "Insert into `tmd`",
+        "x": 1180,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8fd8af43eb6a854f",
+        "type": "debug",
+        "z": "92470c9605c09265",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 880,
+        "wires": []
+    },
+    {
+        "id": "ed1bf7946e837a93",
+        "type": "MySQLdatabase",
+        "name": "",
+        "host": "iot.cpe.ku.ac.th",
+        "port": "3306",
+        "db": "b6610545421",
+        "tz": "+07:00",
+        "charset": "UTF8"
+    },
+    {
+        "id": "f8264d46e499945d",
+        "type": "mqtt-broker",
+        "name": "CPE Broker",
+        "broker": "iot.cpe.ku.ac.th",
+        "port": 1883,
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    }
+]
