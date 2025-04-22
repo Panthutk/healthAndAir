@@ -29,7 +29,7 @@ Collects real-time data from various sources including:
 
 * Automated flows for:
 
-  * Fetching and injecting data every 60 minutes
+  * Fetching and injecting data
 
   * Connecting to APIs and processing sensor input
 
@@ -56,6 +56,7 @@ Collects real-time data from various sources including:
 ### 🔹 Primary Data (KidBright Sensor)
 
 * Source: MQTT broker (`iot.cpe.ku.ac.th`)
+* Sent MQTT every 10 minutes
 * Topic: `b6610545421/sensors`
 * Script: `./backend/kidbright.py`
 * Collected metrics:
