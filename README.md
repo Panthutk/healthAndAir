@@ -1,6 +1,6 @@
 # 🌱 Health And Air Quality Monitoring System
 
-This project integrates **Primary** and **Secondary** environmental data using Node-RED, MQTT, and HTTP APIs to store sensor data in a MySQL database for real-time monitoring and analysis.
+This project integrates **Primary** and **Secondary** environmental data using Node-RED, MQTT, and HTTP APIs to store sensor data in a  database for real-time monitoring and analysis.
 
 ---
 
